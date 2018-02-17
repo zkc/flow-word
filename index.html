@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- double check on this -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>flow read</title>
+    <style>
+        body {
+            margin: 0;
+            border: 50px solid rgb(37, 14, 80);
+            height: 100vh;
+            box-sizing: border-box;
+
+            display: grid;
+            justify-items: center;
+            align-items: center;
+        }
+        
+        #input {
+            width: 70vmin;
+            height: 70vmin;
+
+            grid-row: 1;
+        }
+    </style>
+</head>
+<body id="main">
+
+    <textarea 
+        id="input"
+        placeholder="Paste reading here">
+    </textarea>
+
+    <button id="run">Flow</button>
+
+    <script src="soil.js"></script>
+</body>
+</html>
