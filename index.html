@@ -16,6 +16,7 @@
             display: grid;
             justify-items: center;
             align-items: center;
+            grid-template-rows: 1fr 1fr;
         }
         
         #input {
@@ -24,6 +25,18 @@
 
             grid-row: 1;
         }
+
+        #run {
+            grid-row: 2;
+            padding: 30px;
+        }
+
+        #word-display {
+            font-size: 3em;
+            display: grid;
+
+        }
+
     </style>
 </head>
 <body id="main">
@@ -32,6 +45,9 @@
         id="input"
         placeholder="Paste reading here">
     </textarea>
+
+    <div id="word-display"></div>
+    <button id="pause" style="">pause</button>
 
     <button id="run">Flow</button>
 
