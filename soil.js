@@ -6,9 +6,6 @@ const word_display = document.getElementById('word-display')
 const controls = document.getElementById('controls')
 const pop = document.getElementById('pop')
 
-main.removeChild(word_display)
-main.removeChild(controls)
-
 
 input.value = `
 To be, or not to be, that is the question:
@@ -100,31 +97,33 @@ document.onclick = (e) => {
   switch (e.target.id) {
     case 'pause-button':
       reader.pause()
-      break;
+      break
+
     case 'slowdown':
       reader.changeWPM(-e.target.getAttribute('amount')*1)
       break
+
     case 'speedup':
       reader.changeWPM(e.target.getAttribute('amount')*1)
       break
+
     case 'go-back-button':
       !reader.paused && reader.pause()
       reader.goTo({ isDelta:true, number:-1 })
       break
+
     case 'run':
-      main.removeChild(input)
-      main.removeChild(run)
-    
-      main.appendChild(word_display)
-      main.appendChild(controls)
+      input.style.display = 'none'
+      run.style.display = 'none'
+      word_display.style.display = 'inherit'
+      controls.style.display = 'inherit'
     
       const input_split = input.value.split(/[\n\s]/)
-    
       reader.start(word_display, input_split)
       break
-  
+
     default:
       console.log(e.target.id, 'unknown id case')
-      break;
+      break
   }
 }
