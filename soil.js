@@ -3,9 +3,11 @@ const main = document.getElementById('main')
 const input = document.getElementById('input')
 const run = document.getElementById('run')
 const word_display = document.getElementById('word-display')
-const pause = document.getElementById('pause')
+const pause_button = document.getElementById('pause-button')
+const controls = document.getElementById('controls')
+
 main.removeChild(word_display)
-main.removeChild(pause)
+main.removeChild(controls)
 
 
 input.value = `
@@ -45,52 +47,39 @@ And lose the name of action.
 
 `
 
-
-class Reader {
-  constructor(word_display) {
-    this.state = {
-      pause: false, 
-      word_index: 0,
-      rate: 500,
-      input_split: null,
-      timeout_id: null,
-    }
+const reader = {
+  paused: false,
+  word_index: 0,
+  rate: 400,
+  input_split: null,
+  timeout_id: null,
+  start(word_display, input_split) {
+    this.input_split = input_split
     this.word_display = word_display
-  }
-
-  start(input_split) {
-    this.state.input_split = input_split
-    this.changeWordAndGo()
-  }
-
-  changeWordAndGo() {
-    const { word_display, state: { input_split, rate, timeout_id, word_index }} = this
-    word_display.innerText = input_split[word_index]
-    this.state.word_index++
-    if (word_index < input_split.length) {
-      this.state.timeout_id = setTimeout(() => {
-          this.changeWordAndGo()
-      }, rate)
-    } 
-  }
-
+    this._changeWordAndGo()
+  }, 
+  _changeWordAndGo() {
+    this.word_display.innerText = this.input_split[this.word_index]
+    this.word_index++
+    if(this.word_index < this.input_split.length) {
+      this.timeout_id = setTimeout(() => this._changeWordAndGo(), this.rate)
+    }
+  }, 
   pause() {
-    if (this.state.pause) {
+    if (this.paused) {
       setTimeout(() => {
-        this.changeWordAndGo()
-      }, this.state.rate)
-      this.state.pause = false
+        this._changeWordAndGo()
+      }, this.rate)
+      this.paused = false
     } else {
-      clearTimeout(this.state.timeout_id)
-      this.state.pause = true      
+      clearTimeout(this.timeout_id)
+      this.paused = true      
     }
   }
 }
 
 
-const reader = new Reader(word_display)
-
-pause.onclick = function(e) {
+pause_button.onclick = function(e) {
   reader.pause()
 }
 
@@ -99,11 +88,11 @@ run.onclick = function(e) {
   main.removeChild(run)
 
   main.appendChild(word_display)
-  main.appendChild(pause)
+  main.appendChild(controls)
 
-  const input_split = input.value.split(' ')
+  const input_split = input.value.split(/[\n\s]/)
 
-  reader.start(input_split)
+  reader.start(word_display, input_split)
 }
 
 
