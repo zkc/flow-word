@@ -3,9 +3,14 @@ const main = document.getElementById('main')
 const input = document.getElementById('input')
 const run = document.getElementById('run')
 const word_display = document.getElementById('word-display')
-const pause_button = document.getElementById('pause-button')
 const controls = document.getElementById('controls')
+const pop = document.getElementById('pop')
 
+
+const pause_button = document.getElementById('pause-button')
+const slower_button = document.getElementById('slowdown')
+const faster_button = document.getElementById('speedup')
+const go_back_button = document.getElementById('go-back-button')
 main.removeChild(word_display)
 main.removeChild(controls)
 
@@ -50,7 +55,10 @@ And lose the name of action.
 const reader = {
   paused: false,
   word_index: 0,
-  rate: 400,
+  WPM: 200,
+  get rate() {
+    return ((60 / this.WPM) * 1000);
+  },
   input_split: null,
   timeout_id: null,
   start(word_display, input_split) {
@@ -59,9 +67,9 @@ const reader = {
     this._changeWordAndGo()
   }, 
   _changeWordAndGo() {
-    this.word_display.innerText = this.input_split[this.word_index]
-    this.word_index++
     if(this.word_index < this.input_split.length) {
+      this.word_display.innerText = this.input_split[this.word_index]
+      this.word_index++
       this.timeout_id = setTimeout(() => this._changeWordAndGo(), this.rate)
     }
   }, 
@@ -75,12 +83,34 @@ const reader = {
       clearTimeout(this.timeout_id)
       this.paused = true      
     }
+  }, 
+  changeWPM(by) {
+    this.WPM += by
   }
 }
 
+const showWPM = () => {
+  pop.innerText = reader.WPM + ' WPM'
+}
 
-pause_button.onclick = function(e) {
+pause_button.onclick = (e) => {
   reader.pause()
+}
+
+slower_button.onclick = () => {
+  reader.changeWPM(-20)
+  showWPM()
+}
+
+faster_button.onclick = () => {
+  reader.changeWPM(20)
+  showWPM()
+}
+
+go_back_button.onclick = () => {
+  !reader.paused && reader.pause()
+  reader.word_index--
+  reader.word_display.innerText = reader.input_split[reader.word_index]
 }
 
 run.onclick = function(e) {
@@ -93,6 +123,7 @@ run.onclick = function(e) {
   const input_split = input.value.split(/[\n\s]/)
 
   reader.start(word_display, input_split)
+  showWPM()
 }
 
 
