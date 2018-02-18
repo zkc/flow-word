@@ -6,11 +6,6 @@ const word_display = document.getElementById('word-display')
 const controls = document.getElementById('controls')
 const pop = document.getElementById('pop')
 
-
-const pause_button = document.getElementById('pause-button')
-const slower_button = document.getElementById('slowdown')
-const faster_button = document.getElementById('speedup')
-const go_back_button = document.getElementById('go-back-button')
 main.removeChild(word_display)
 main.removeChild(controls)
 
@@ -64,6 +59,7 @@ const reader = {
   start(word_display, input_split) {
     this.input_split = input_split
     this.word_display = word_display
+    this.changeWPM(0)
     this._changeWordAndGo()
   }, 
   _changeWordAndGo() {
@@ -86,45 +82,49 @@ const reader = {
   }, 
   changeWPM(by) {
     this.WPM += by
+    pop.innerText = reader.WPM + ' WPM'
+    
+  },
+  goTo({ isDelta, number }) {
+    if (isDelta) {
+      this.word_index += number
+    } else {
+      this.word_index = number
+    }
+    this.word_display.innerText = this.input_split[this.word_index]
   }
 }
 
-const showWPM = () => {
-  pop.innerText = reader.WPM + ' WPM'
+
+document.onclick = (e) => {
+  switch (e.target.id) {
+    case 'pause-button':
+      reader.pause()
+      break;
+    case 'slowdown':
+      reader.changeWPM(-e.target.getAttribute('amount')*1)
+      break
+    case 'speedup':
+      reader.changeWPM(e.target.getAttribute('amount')*1)
+      break
+    case 'go-back-button':
+      !reader.paused && reader.pause()
+      reader.goTo({ isDelta:true, number:-1 })
+      break
+    case 'run':
+      main.removeChild(input)
+      main.removeChild(run)
+    
+      main.appendChild(word_display)
+      main.appendChild(controls)
+    
+      const input_split = input.value.split(/[\n\s]/)
+    
+      reader.start(word_display, input_split)
+      break
+  
+    default:
+      console.log(e.target.id, 'unknown id case')
+      break;
+  }
 }
-
-pause_button.onclick = (e) => {
-  reader.pause()
-}
-
-slower_button.onclick = () => {
-  reader.changeWPM(-20)
-  showWPM()
-}
-
-faster_button.onclick = () => {
-  reader.changeWPM(20)
-  showWPM()
-}
-
-go_back_button.onclick = () => {
-  !reader.paused && reader.pause()
-  reader.word_index--
-  reader.word_display.innerText = reader.input_split[reader.word_index]
-}
-
-run.onclick = function(e) {
-  main.removeChild(input)
-  main.removeChild(run)
-
-  main.appendChild(word_display)
-  main.appendChild(controls)
-
-  const input_split = input.value.split(/[\n\s]/)
-
-  reader.start(word_display, input_split)
-  showWPM()
-}
-
-
-
