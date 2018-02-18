@@ -9,9 +9,11 @@
     <style>
         body {
             margin: 0;
-            border: 50px solid rgb(37, 14, 80);
+            border: 50px solid rgb(94, 84, 114);
             height: 100vh;
             box-sizing: border-box;
+            font-family: sans-serif;
+
             display: grid;
             justify-items: center;
             align-items: center;
@@ -32,6 +34,9 @@
         #word-display {
             font-size: 3em;
             display: grid;
+            text-align: center;
+            grid-template-rows: 3fr 2fr;
+            height: 130px;
         }
 
         #controls {
@@ -46,8 +51,40 @@
 
         #pop {
             grid-row: 2;
-            grid-column: 2;
+            grid-column: 1/5;
         }
+        #words_view {
+            grid-row: 2;
+            display: flex;
+            width: 75vw;
+            justify-content: space-evenly;
+        }
+
+        .word-viewbox {
+            font-size: .5em;
+            border: 2px solid rgb(223, 223, 223);
+            padding: 10px;
+            display: grid;
+            align-content: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .word-viewbox:last-child {
+            font-weight: bold;
+            border: none;
+        }
+        .word-viewbox:nth-child(1) {
+            font-size: .2em;
+        }
+        .word-viewbox:nth-child(2) {
+            font-size: .3em;
+        }
+        .word-viewbox:nth-child(3) {
+            font-size: .4em;
+        }
+
+
 
     </style>
 </head>

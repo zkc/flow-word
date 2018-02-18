@@ -47,12 +47,13 @@ And lose the name of action.
 const reader = {
   paused: false,
   word_index: 0,
-  WPM: 200,
+  WPM: 400,
   get rate() {
     return ((60 / this.WPM) * 1000);
   },
   input_split: null,
   timeout_id: null,
+  words_view: null,
   start(word_display, input_split) {
     this.input_split = input_split
     this.word_display = word_display
@@ -72,29 +73,52 @@ const reader = {
         this._changeWordAndGo()
       }, this.rate)
       this.paused = false
+      this.unExpandView()
     } else {
       clearTimeout(this.timeout_id)
-      this.paused = true      
+      this.paused = true
+      this.expandView()
     }
   }, 
   changeWPM(by) {
     this.WPM += by
     pop.innerText = reader.WPM + ' WPM'
-    
   },
   goTo({ isDelta, number }) {
     if (isDelta) {
       this.word_index += number
     } else {
       this.word_index = number
+    } 
+    this.word_display.innerText = this.input_split[this.word_index-1]
+    this.expandView()
+  }, 
+  expandView() {
+    if (!this.words_view) {
+      this.words_view = document.createElement('div')
+      this.words_view.id = 'words_view'
+    } else {
+      while (this.words_view.firstChild) {
+        this.words_view.removeChild(this.words_view.firstChild)
+      }
     }
-    this.word_display.innerText = this.input_split[this.word_index]
+    for (let i = this.word_index-6; i < this.word_index; i++) { //could allow future words too
+      const wordEle = document.createElement('div')
+      wordEle.className = "word-viewbox"
+      wordEle.innerText = this.input_split[i]
+      wordEle.setAttribute('word_index', i+1) 
+      this.words_view.appendChild(wordEle)
+    }
+    this.word_display.appendChild(this.words_view)
+  },
+  unExpandView() {
+    this.word_display.removeChild(this.words_view)
   }
 }
 
 
 document.onclick = (e) => {
-  switch (e.target.id) {
+  switch (e.target.id || e.target.parentNode.id) {
     case 'pause-button':
       reader.pause()
       break
@@ -115,15 +139,20 @@ document.onclick = (e) => {
     case 'run':
       input.style.display = 'none'
       run.style.display = 'none'
-      word_display.style.display = 'inherit'
-      controls.style.display = 'inherit'
+      word_display.style.display = 'grid'
+      controls.style.display = 'grid'
     
       const input_split = input.value.split(/[\n\s]/)
       reader.start(word_display, input_split)
       break
+    
+    case 'words_view':
+      const index = e.target.getAttribute('word_index')*1
+      index && reader.goTo({ number: index })
+      break
 
     default:
-      console.log(e.target.id, 'unknown id case')
+      console.log(e, e.target.id, 'unknown id case')
       break
   }
 }
