@@ -49,11 +49,19 @@ const reader = {
   word_index: 0,
   WPM: 400,
   get rate() {
-    return ((60 / this.WPM) * 1000);
+    if (this.breath) {
+      this.breath = false
+      return ((60 / (this.WPM * this.breath_percent)) * 1000);
+    } else {
+      return ((60 / this.WPM) * 1000);
+    }
   },
   input_split: null,
   timeout_id: null,
   words_view: null,
+  breath_regex: RegExp('[,\.;:?!]'),
+  breath_percent: 0.5,
+  breath: false, 
   start(word_display, input_split) {
     this.input_split = input_split
     this.word_display = word_display
@@ -62,8 +70,11 @@ const reader = {
   }, 
   _changeWordAndGo() {
     if(this.word_index < this.input_split.length) {
-      this.word_display.innerText = this.input_split[this.word_index]
+      const nextWord = this.input_split[this.word_index]
+      
+      this.word_display.innerText = nextWord
       this.word_index++
+      this.breath = nextWord.match(this.breath_regex)
       this.timeout_id = setTimeout(() => this._changeWordAndGo(), this.rate)
     }
   }, 
