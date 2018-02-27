@@ -153,7 +153,7 @@ document.onclick = (e) => {
       word_display.style.display = 'grid'
       controls.style.display = 'grid'
     
-      const input_split = input.value.split(/[\n\s]/)
+      const input_split = input.value.split(/[\n\s—]/) // ? handle — as a pause? 
       reader.start(word_display, input_split)
       break
     
