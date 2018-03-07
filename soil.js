@@ -41,7 +41,6 @@ Is sicklied o'er with the pale cast of thought,
 And enterprises of great pitch and moment
 With this regard their currents turn awry
 And lose the name of action.
-
 `
 
 const reader = {
@@ -56,21 +55,21 @@ const reader = {
       return ((60 / this.WPM) * 1000);
     }
   },
-  input_split: null,
+  text_array: null,
   timeout_id: null,
   words_view: null,
   breath_regex: RegExp('[,\.;:?!]'),
   breath_percent: 0.5,
   breath: false, 
-  start(word_display, input_split) {
-    this.input_split = input_split
+  start(word_display, text_array) {
+    this.text_array = text_array
     this.word_display = word_display
     this.changeWPM(0)
     this._changeWordAndGo()
   }, 
   _changeWordAndGo() {
-    if(this.word_index < this.input_split.length) {
-      const nextWord = this.input_split[this.word_index]
+    if(this.word_index < this.text_array.length) {
+      const nextWord = this.text_array[this.word_index]
       
       this.word_display.innerText = nextWord
       this.word_index++
@@ -85,10 +84,12 @@ const reader = {
       }, this.rate)
       this.paused = false
       this.unExpandView()
+      document.getElementById('pause-button').innerHTML = 'pause'      
     } else {
       clearTimeout(this.timeout_id)
       this.paused = true
       this.expandView()
+      document.getElementById('pause-button').innerHTML = 'play'      
     }
   }, 
   changeWPM(by) {
@@ -101,7 +102,7 @@ const reader = {
     } else {
       this.word_index = number
     } 
-    this.word_display.innerText = this.input_split[this.word_index-1]
+    this.word_display.innerText = this.text_array[this.word_index-1]
     this.expandView()
   }, 
   expandView() {
@@ -116,7 +117,7 @@ const reader = {
     for (let i = this.word_index-6; i < this.word_index; i++) { //could allow future words too
       const wordEle = document.createElement('div')
       wordEle.className = "word-viewbox"
-      wordEle.innerText = this.input_split[i]
+      wordEle.innerText = this.text_array[i]
       wordEle.setAttribute('word_index', i+1) 
       this.words_view.appendChild(wordEle)
     }
@@ -133,35 +134,29 @@ document.onclick = (e) => {
     case 'pause-button':
       reader.pause()
       break
-
     case 'slowdown':
-      reader.changeWPM(-e.target.getAttribute('amount')*1)
+      reader.changeWPM(e.target.getAttribute('amount')*-1)
       break
-
     case 'speedup':
       reader.changeWPM(e.target.getAttribute('amount')*1)
       break
-
     case 'go-back-button':
       !reader.paused && reader.pause()
       reader.goTo({ isDelta:true, number:-1 })
       break
-
     case 'run':
       input.style.display = 'none'
       run.style.display = 'none'
       word_display.style.display = 'grid'
       controls.style.display = 'grid'
     
-      const input_split = input.value.split(/[\n\s—]/) // ? handle — as a pause? 
-      reader.start(word_display, input_split)
+      const text_array = input.value.split(/[\n\s—]/) // ? handle — as a pause? 
+      reader.start(word_display, text_array)
       break
-    
     case 'words_view':
       const index = e.target.getAttribute('word_index')*1
       index && reader.goTo({ number: index })
       break
-
     default:
       console.log(e, e.target.id, 'unknown id case')
       break
